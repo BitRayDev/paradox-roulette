@@ -66,8 +66,8 @@ const items = [
 ]
 
 function Roulette(props) {
-	const [title, setTitle] = useState("Золотая рулетка");
-	const [subTitle, setSubTitle] = useState("Одна из самых драгоценных рулеток, открывай и выигрывай!");
+	const [title, setTitle] = useState("Бронзовая рулетка");
+	const [subTitle, setSubTitle] = useState("Описание бронзовой рулетки.");
 
 	const [balance, setBalance] = useState(0);
 	const [pricePerSpin, setPricePerSpin] = useState(0);
