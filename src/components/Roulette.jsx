@@ -1,9 +1,8 @@
-import React, { createRef, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import bg from '../assets/img/bg.png';
 import CashProperty from './CashProperty';
-import InfoButton from './InfoButton';
 import RouletteTypeSelector from './RouletteTypeSelector';
 import SpinButton from './SpinButton';
 import SpinningSlot from './SpinningSlot';
@@ -11,7 +10,13 @@ import SpinningSlot from './SpinningSlot';
 import porsche from '../assets/img/prizes/porsche.png'
 import coin from '../assets/img/prizes/coin.png'
 
+import infoIcon from '../assets/img/icons/info.svg';
+import rouletteIcon from '../assets/img/icons/roulette.svg';
+import cartIcon from '../assets/img/icons/cart.svg';
 import arrow from '../assets/img/arrow.svg'
+import closeButton from '../assets/img/icons/close.svg'
+import Button from './Button';
+
 
 const itemColors = [
 	{
@@ -61,9 +66,17 @@ const items = [
 ]
 
 function Roulette(props) {
+	const [title, setTitle] = useState("Золотая рулетка");
+	const [subTitle, setSubTitle] = useState("Одна из самых драгоценных рулеток, открывай и выигрывай!");
+
 	const [balance, setBalance] = useState(0);
 	const [pricePerSpin, setPricePerSpin] = useState(0);
+
+	const [spinButtonTitle, setSpinButtonTitle] = useState("Крутить");
+	const [spinButtonIcon, setSpinButtonIcon] = useState(rouletteIcon);
+	const [spinButtonBackground, setSpinButtonBackground] = useState("linear-gradient(232.51deg, #943030 -15.58%, #46005F 162.66%)");
 	const [spinsLeft, setSpinsLeft] = useState(0);
+
 	const [generatedSlots, setGeneratedSlots] = useState([]);
 	const [winItem, setWinItem] = useState(items[0]);
 	const [isRolling, setIsRolling] = useState(false);
@@ -78,13 +91,35 @@ function Roulette(props) {
 		startRoulette();
 	}, [generatedSlots]);
 
-	function handleSpinButtonClick() {
-		if (isRolling)
-			return;
-
-		resetRoulette();
+	useEffect(() => {
 		generateSlots();
-		setIsRolling(true);
+	}, [])
+
+	useEffect(() => {
+		if (spinsLeft === 0) {
+			setSpinButtonTitle("Купить");
+			setSpinButtonBackground("linear-gradient(232.51deg, #34B429 -15.58%, #2C452E 162.66%)");
+			setSpinButtonIcon(cartIcon);
+		} else {
+			setSpinButtonTitle("Крутить");
+			setSpinButtonBackground("linear-gradient(232.51deg, #943030 -15.58%, #46005F 162.66%)");
+			setSpinButtonIcon(rouletteIcon);
+		}
+	}, [spinsLeft])
+
+	function handleSpinButtonClick() {
+		if (spinsLeft === 0) {
+			// TODO: Покупка спина
+			setSpinsLeft(spinsLeft + 1);
+		} else {
+			if (isRolling)
+				return;
+
+			setSpinsLeft(spinsLeft - 1);
+			resetRoulette();
+			generateSlots();
+			setIsRolling(true);
+		}
 	}
 
 	function resetRoulette() {
@@ -99,7 +134,6 @@ function Roulette(props) {
 	}
 
 	function stopRoulette() {
-		slotsContainerRef.current.style.transition = "none";
 		setIsRolling(false);
 	}
 
@@ -107,7 +141,7 @@ function Roulette(props) {
 		let slots = [];
 		for (let i = 0; i < 38; i++) {
 			let item;
-			if (i == 33) {
+			if (i === 33) {
 				item = winItem;
 			} else {
 				let itemIndex = getRandomInt(0, 4);
@@ -130,14 +164,36 @@ function Roulette(props) {
 	}
 
 	function handleRouletteTypeChange(tabIndex) {
-		console.log("Type have changed!");
+		let title, subTitle;
+		switch (tabIndex) {
+			default:
+				title = "Бронзовая рулетка";
+				subTitle = "Описание бронзовой рулетки";
+				break;
+			case 1:
+				title = "Серебряная рулетка"
+				subTitle = "Описание серебряной рулетки";
+				break;
+			case 2:
+				title = "Золотая рулетка"
+				subTitle = "Одна из самых драгоценных рулеток, открывай и выигрывай!";
+				break;
+		}
+
+		setTitle(title);
+		setSubTitle(subTitle);
+	}
+
+	function handleClose() {
+
 	}
 
 	return (
 		<Screen>
 			<RouletteContainer>
-				<Title>Золотая рулетка</Title>
-				<Subtitle>Одна из самых дорогоценных рулеток, открывай и выигрывай!</Subtitle>
+				<CloseButton src={closeButton} onClick={handleClose}></CloseButton>
+				<Title>{title}</Title>
+				<Subtitle>{subTitle}</Subtitle>
 
 				<Dashboard>
 					<div>
@@ -150,30 +206,26 @@ function Roulette(props) {
 						</CashProperty>
 					</div>
 					<div>
-						<RouletteTypeSelectionTitle>Выбор рулетки:</RouletteTypeSelectionTitle>
-						<RouletteTypeSelector onSelectionChanged={handleRouletteTypeChange}></RouletteTypeSelector>
+						<RouletteTypeSelectionTitle>Тип рулетки:</RouletteTypeSelectionTitle>
+						<RouletteTypeSelector onSelectionChanged={handleRouletteTypeChange} isLocked={isRolling}></RouletteTypeSelector>
 					</div>
 				</Dashboard>
 
-				<SplitterContainer>
+				<RouletteBody>
 					<Splitter></Splitter>
 					<Arrow src={arrow}></Arrow>
-				</SplitterContainer>
 
-				<RouletteBody>
 					<RouletteSlotsContainer ref={slotsContainerRef}>
 						{generatedSlots}
 					</RouletteSlotsContainer>
-				</RouletteBody>
 
-				<SplitterContainer>
 					<InversedArrow src={arrow}></InversedArrow>
 					<Splitter></Splitter>
-				</SplitterContainer>
+				</RouletteBody>
 
 				<Dashboard>
 					<div>
-						<RoulettePriceTitle>Стоимость рулетки:</RoulettePriceTitle>
+						<RoulettePriceTitle>Стоимость прокрутки:</RoulettePriceTitle>
 						<CashProperty
 							currency="RUB"
 							value={pricePerSpin}
@@ -181,9 +233,9 @@ function Roulette(props) {
 							backgroundColor="linear-gradient(90deg, rgba(231, 168, 74, 0.3) -39.33%, rgba(133, 107, 42, 0.0015625) 99.99%)">
 						</CashProperty>
 					</div>
-					<SpinButton onClick={handleSpinButtonClick} spinsLeft={spinsLeft}></SpinButton>
+					<SpinButton title={spinButtonTitle} icon={spinButtonIcon} backgroundColor={spinButtonBackground} onClick={handleSpinButtonClick} spinsLeft={spinsLeft}></SpinButton>
+					<Button title="Информация" icon={infoIcon} backgroundColor="rgba(34, 34, 34, 0.7)"></Button>
 
-					<InfoButton></InfoButton>
 				</Dashboard>
 			</RouletteContainer>
 		</Screen>
@@ -206,6 +258,23 @@ const Screen = styled.div`
 	align-items: center;
 `
 
+const CloseButton = styled.img`
+	position: absolute;
+	display: block;
+
+	right: 2.5vw;
+	top: 2.5vw;
+
+	transition: all 0.15s ease-in;
+	transform: translate(50%, -50%);
+
+	width: 1.2vw;
+
+	:hover {
+		width: 1.4vw;
+	}
+`
+
 const RouletteContainer = styled.div`
 	background-color: rgba(27, 15, 31, 95%);
 	border-radius: 1vw;
@@ -214,6 +283,7 @@ const RouletteContainer = styled.div`
 	width: 55vw;
 
 	padding: 2vw;
+	position: relative;
 `
 
 const Title = styled.h1`
@@ -249,9 +319,6 @@ const RouletteTypeSelectionTitle = styled.h4`
 	font-weight: 500;
 	margin-bottom: .25vw;
 `
-const SplitterContainer = styled.div`
-	margin: .5vw 0;
-`
 
 const Splitter = styled.hr`
 	border: none;
@@ -276,6 +343,7 @@ const InversedArrow = styled.img`
 `
 
 const RouletteBody = styled.div`
+	margin: .8vw 0;
 	overflow: hidden;
 `
 const RouletteSlotsContainer = styled.div`
@@ -288,7 +356,7 @@ const RouletteSlotsContainer = styled.div`
 
 const RoulettePriceTitle = styled.h3`
 	color: white;
-	font-size: .6vw;
+	font-size: .9vw;
 	font-weight: 500;
 	margin-bottom: .25vw;
 `

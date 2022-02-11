@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-function RouletteTypeSelector({onSelectionChanged}) {
+function RouletteTypeSelector({onSelectionChanged, isLocked}) {
 	const [selectedTabIndex, setSelectedTabIndex] = useState(0);
 	const tabsContainer = React.createRef();
 
 	function handleClick(e) {
+		if(isLocked)
+			return;
+
 		let selectedIndex = [].indexOf.call (tabsContainer.current.children, e.target);
-		if(selectedIndex != selectedTabIndex) {
+		if(selectedIndex != selectedTabIndex && selectedIndex >= 0) {
 			setSelectedTabIndex(selectedIndex);
 			onSelectionChanged(selectedIndex);
 		}

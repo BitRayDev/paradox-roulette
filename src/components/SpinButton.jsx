@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
+import Button from './Button';
 
-function SpinButton({onClick, spinsLeft}) {
+function SpinButton({title, icon, backgroundColor, onClick, spinsLeft}) {
 	return (
 		<SpinContainer>
-			<SpinButtonContainer onClick={onClick}>Крутить</SpinButtonContainer>
+			<Button title={title} icon={icon} backgroundColor={backgroundColor} onClick={onClick}></Button>
 			<SpinsLeftContainer>
 				<SpinsLeftTitle>Осталось:</SpinsLeftTitle>
 				<SpinsLeftValue>{spinsLeft} шт.</SpinsLeftValue>
@@ -20,18 +21,7 @@ const SpinContainer = styled.div`
 	background: #271828;
 	border-radius: 1vw;	
 `
-const SpinButtonContainer = styled.button`
-	border: none;
-	border-radius: 1vw;
-	background: linear-gradient(232.51deg, #943030 -15.58%, #46005F 162.66%);
-	padding: .75vw 2vw;
-	font-size: 1vw;
 
-	transition: all .25s ease-out;
-	:hover {
-		font-size: 1.1vw;
-	}
-`
 const SpinsLeftContainer = styled.div`
 	padding: 0 .5vw;	
 `

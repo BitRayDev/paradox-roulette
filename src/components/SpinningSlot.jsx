@@ -67,7 +67,7 @@ function SpinningSlot({backgroundColor, neonColorBegin, neonColorEnd, itemName, 
 				<SlotImageContainer>
 					<SlotImage src={itemIcon}/>
 				</SlotImageContainer>
-				<SlotText>{itemName}</SlotText>
+				<SlotText color={neonColorBegin}>{itemName}</SlotText>
 			</SlotDataContainer>
 		</SlotContainer>
 	);
@@ -103,6 +103,8 @@ const SlotText = styled.h3`
 	text-align: center;
 
 	font-size: 1vw;
+	font-weight: 300;
+	color: ${props => props.color};
 `
 
 const SlotImageContainer = styled.div`
